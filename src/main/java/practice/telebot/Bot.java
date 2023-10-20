@@ -34,7 +34,7 @@ public class Bot extends TelegramLongPollingBot {
 
                 Double latitude = m.getLocation().getLatitude();
                 Double longitude = m.getLocation().getLongitude();
-                String result = foodSvc.getNearByFood(latitude, longitude, botToken);
+                String result = foodSvc.getNearByFood(latitude, longitude);
 
                 SendMessageBuilder smsgBuilder = SendMessage.builder();
                 
