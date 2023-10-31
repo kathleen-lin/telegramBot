@@ -1,5 +1,7 @@
 package practice.telebot;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -34,18 +36,23 @@ public class Bot extends TelegramLongPollingBot {
 
                 Double latitude = m.getLocation().getLatitude();
                 Double longitude = m.getLocation().getLongitude();
-                String result = foodSvc.getNearByFood(latitude, longitude);
-
+                List<Listing> shopsOpenNow = foodSvc.getNearByFood(latitude, longitude);
+               
                 SendMessageBuilder smsgBuilder = SendMessage.builder();
-                
-                SendMessage msgToSend =smsgBuilder.chatId(chatId).text(result).build();
-                try {
-                    execute(msgToSend);
-                
+
+                for (int i = 0 ; i < 5; i++) {
+                    SendMessage msgToSend =smsgBuilder.chatId(chatId).text("Result " + String.valueOf(i + 1) + "\n" + shopsOpenNow.get(i).toString()).build();
+
+                    try {
+                        execute(msgToSend);
+                    
+                    }
+                    catch (TelegramApiException e){
+                        e.printStackTrace();
+                    }
                 }
-                catch (TelegramApiException e){
-                    e.printStackTrace();
-                }
+                
+            
             } else {
 
                 SendMessageBuilder smsgBuilder = SendMessage.builder();

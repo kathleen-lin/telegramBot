@@ -7,6 +7,8 @@ public class Listing {
     private String vicinity;
     private String place_id;
     private String url;
+    private Double lat;
+    private Double lng;
     
     public String getName() {
         return name;
@@ -14,6 +16,7 @@ public class Listing {
     public void setName(String name) {
         this.name = name;
     }
+    
     public String getRating() {
         return rating;
     }
@@ -23,9 +26,23 @@ public class Listing {
     public String getVincity() {
         return vicinity;
     }
-    public void setVincity(String vincity) {
-        this.vicinity = vincity;
+    public Double getLat() {
+        return lat;
     }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+        
+    public Double getLng() {
+        return lng;
+    }
+        public void setLng(Double lng) {
+            this.lng = lng;
+        }
+        public void setVincity(String vincity) {
+                this.vicinity = vincity;
+            }
 
     public String getPlace_id() {
     return place_id;
@@ -34,18 +51,16 @@ public class Listing {
         this.place_id = place_id;
     }
 
-    public String url() {
-    return url;
-    }
+   
+
     public void setUrl(Double lat, Double lng) {
         this.url = "https://www.google.com/maps/search/?api=1&query=" + lat.toString() + "%2C" + lng.toString() + "&" + "query_place_id=" + this.place_id;
     }
+  
     @Override
     public String toString() {
         return "Name: " + name + "\n" + "Rating: " + rating + "\n" + "Address: " + vicinity + "\n" + "Url: " + url + "\n";
     }
-
-    
 
 }
 
