@@ -7,8 +7,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage.SendMessageBuilder;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
@@ -26,6 +29,7 @@ public class Bot extends TelegramLongPollingBot {
 	
     @Override
     public void onUpdateReceived(Update update) {
+
         // System.out.println("bot is live");
         // Try to get location from user
         if (update.hasMessage()){
@@ -51,9 +55,27 @@ public class Bot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                 }
+
+                // send a next button after first 5 results
+                var nextButton = InlineKeyboardButton.builder().text("next").callbackData("next").build();
                 
+                // keyboard
+                InlineKeyboardMarkup kb = InlineKeyboardMarkup.builder().keyboardRow(List.of(nextButton)).build();
+                
+                SendMessage sendButton =SendMessage.builder().chatId(chatId).parseMode("HTML").text("button").replyMarkup(kb).build();
+
+                    try {
+                        execute(sendButton);
+                    
+                    }
+                    catch (TelegramApiException e){
+                        e.printStackTrace();
+                    }
+                    
+
+            }
             
-            } else {
+            else {
 
                 SendMessageBuilder smsgBuilder = SendMessage.builder();
                
@@ -67,7 +89,11 @@ public class Bot extends TelegramLongPollingBot {
                 }
             }
         
-        }
+        } if (update.hasCallbackQuery()) {
+
+                CallbackQuery cb = update.getCallbackQuery();
+                System.out.println(cb.getData());
+            }
         
     }
     
