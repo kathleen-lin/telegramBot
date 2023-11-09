@@ -43,8 +43,10 @@ public class GetFoodSvc {
 
         JsonArray resultsArr = jsonResult.getAsJsonArray("results");
 
+        // int numOfResult = 0;
 
         for (JsonElement r: resultsArr){
+            // numOfResult++;
             // every result as jsonobject
             JsonObject jsonObjectPlace =  r.getAsJsonObject();
             Listing place = new Listing();
@@ -63,6 +65,10 @@ public class GetFoodSvc {
             System.out.println(place.toString());
 
             placesOpenNow.add(place);
+
+            // if (numOfResult > 8){
+            //     break;
+            // }
         }
 
         System.out.println(placesOpenNow.size());
