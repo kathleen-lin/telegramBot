@@ -1,5 +1,7 @@
 package practice.telebot;
 
+import java.util.List;
+
 public class Listing {
     
     private String name;
@@ -56,7 +58,8 @@ public class Listing {
     public void setUrl(Double lat, Double lng) {
         this.url = "https://www.google.com/maps/search/?api=1&query=" + lat.toString() + "%2C" + lng.toString() + "&" + "query_place_id=" + this.place_id;
     }
-  
+
+
     @Override
     public String toString() {
         return "Name: " + name + "\n" + "Rating: " + rating + "\n" + "Address: " + vicinity + "\n" + "Url: " + url + "\n";

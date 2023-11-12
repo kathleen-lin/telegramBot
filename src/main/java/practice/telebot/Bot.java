@@ -34,6 +34,7 @@ public class Bot extends TelegramLongPollingBot {
     List<Listing> shopsOpenNow = new LinkedList<Listing>();
     int pageIndex = 0;
     int listingPerPage = 5;
+    SendMessageBuilder smsgBuilder = SendMessage.builder();
 	
     @Override
     public void onUpdateReceived(Update update) {
@@ -52,26 +53,9 @@ public class Bot extends TelegramLongPollingBot {
                 Double longitude = m.getLocation().getLongitude();
                 shopsOpenNow = foodSvc.getNearByFood(latitude, longitude);
                
-                SendMessageBuilder smsgBuilder = SendMessage.builder();
-
-
-
-
-
-                // for (int i = pageIndex * 5 ; i < pageIndex * 5 - 1; i++) {
-                //     SendMessage msgToSend =smsgBuilder.chatId(chatId).text("Result " + String.valueOf(i + 1) + "\n" + shopsOpenNow.get(i).toString()).build();
-
-                //     try {
-                //         execute(msgToSend);
-                    
-                //     }
-                //     catch (TelegramApiException e){
-                //         e.printStackTrace();
-                //     }
-                // }
 
                 // try to get a sublist based on limit/offset
-                List <Listing> pageResult = shopsOpenNow.subList(Math.min(shopsOpenNow.size(), pageIndex * listingPerPage), Math.min(shopsOpenNow.size(), pageIndex * listingPerPage + listingPerPage));
+                List <Listing> pageResult = foodSvc.getPageResult(shopsOpenNow, pageIndex, listingPerPage);
                 
                 for (int i = 0; i < pageResult.size(); i++) {
                     SendMessage msgToSend =smsgBuilder.chatId(chatId).text("Result " + String.valueOf(i + 1) + "\n" + pageResult.get(i).toString()).build();
@@ -85,23 +69,11 @@ public class Bot extends TelegramLongPollingBot {
                     }
                 }
 
-
-                // callback data should contain information about which page it is navigating to
-                String nextCallBack = "page" + ":" + Integer.toString(pageIndex + 1);                
-                String previousCallBack = "page" + ":" + Integer.toString(pageIndex - 1);
-
-
-                // send a next button after first 5 results
-                var nextButton = InlineKeyboardButton.builder().text("next").callbackData(nextCallBack).build();
-
-                var previousButton = InlineKeyboardButton.builder().text("previous").callbackData(previousCallBack).build();
-
-                List<InlineKeyboardButton> buttonsRow = new ArrayList<>();
-                buttonsRow.add(previousButton);
-                buttonsRow.add(nextButton);
+                navButtons buttons = new navButtons(pageIndex);
+                List<InlineKeyboardButton> buttonRow = buttons.getButtonRow();
                 
                 // keyboard
-                InlineKeyboardMarkup kb = InlineKeyboardMarkup.builder().keyboardRow(buttonsRow).build();
+                InlineKeyboardMarkup kb = InlineKeyboardMarkup.builder().keyboardRow(buttonRow).build();
                 
                 String textMessgae = "page " + String.valueOf(pageIndex+1) + "/" + String.valueOf(Math.floorDiv(shopsOpenNow.size(),listingPerPage));
                 SendMessage sendButton =SendMessage.builder().chatId(chatId).parseMode("HTML").text(textMessgae).replyMarkup(kb).build();
@@ -159,7 +131,7 @@ public class Bot extends TelegramLongPollingBot {
                     pageIndex = pageNum;
                     System.out.println("should list out next page");
                     System.out.println("------------------------------");
-                    List <Listing> pageResult = shopsOpenNow.subList(Math.min(shopsOpenNow.size(), pageIndex * listingPerPage), Math.min(shopsOpenNow.size(), pageIndex * listingPerPage + listingPerPage));
+                    List <Listing> pageResult = foodSvc.getPageResult(shopsOpenNow, pageIndex, listingPerPage);
 
                     System.out.println(pageResult.toString());
                 
@@ -175,21 +147,12 @@ public class Bot extends TelegramLongPollingBot {
                         }
                     }
 
-                    String nextCallBack = "page" + ":" + Integer.toString(pageIndex + 1);                
-                    String previousCallBack = "page" + ":" + Integer.toString(pageIndex - 1);
-
-
-                    // send a next button after first 5 results
-                    var nextButton = InlineKeyboardButton.builder().text("next").callbackData(nextCallBack).build();
-
-                    var previousButton = InlineKeyboardButton.builder().text("previous").callbackData(previousCallBack).build();
-
-                    List<InlineKeyboardButton> buttonsRow = new ArrayList<>();
-                    buttonsRow.add(previousButton);
-                    buttonsRow.add(nextButton);
+                    navButtons buttons = new navButtons(pageIndex);
+                    List<InlineKeyboardButton> buttonRow = buttons.getButtonRow();
+                
                     
                     // keyboard
-                    InlineKeyboardMarkup kb = InlineKeyboardMarkup.builder().keyboardRow(buttonsRow).build();
+                    InlineKeyboardMarkup kb = InlineKeyboardMarkup.builder().keyboardRow(buttonRow).build();
 
                     String textMessgae = "page " + String.valueOf(pageIndex+1) + "/" + String.valueOf(Math.floorDiv(shopsOpenNow.size(),listingPerPage));
 
@@ -209,35 +172,6 @@ public class Bot extends TelegramLongPollingBot {
                 
 
 
-                // EditMessageText newTxt = EditMessageText.builder()
-                // .chatId(chatId.toString())
-                // .messageId(msgId).text("").build();
-
-                // EditMessageReplyMarkup newKb = EditMessageReplyMarkup.builder()
-                //         .chatId(chatId.toString()).messageId(msgId).build();
-                
-                // var button1 = InlineKeyboardButton.builder().text("button1").callbackData("button1").build();
-
-                // var button2 = InlineKeyboardButton.builder().text("button2").callbackData("button2").build();
-
-                // var button3 = InlineKeyboardButton.builder().text("button3").callbackData("button3").build();
-
-                // List<InlineKeyboardButton> buttonsRow = new ArrayList<>();
-                // buttonsRow.add(button2);
-                // buttonsRow.add(button3);
-
-                // InlineKeyboardMarkup kb1 = InlineKeyboardMarkup.builder().keyboardRow(List.of(button1)).build();
-
-                // // keyboard
-                // InlineKeyboardMarkup kb2 = InlineKeyboardMarkup.builder().keyboardRow(buttonsRow).build();
-
-                // if(cb.getData().equals("next")) {
-                //     newTxt.setText("MENU 2");
-                //     newKb.setReplyMarkup(kb1);
-                // } else {
-                //     newTxt.setText("MENU 1");
-                //     newKb.setReplyMarkup(kb2);
-                // }
 
                 AnswerCallbackQuery close = AnswerCallbackQuery.builder()
                             .callbackQueryId(cb.getId()).build();

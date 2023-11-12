@@ -78,6 +78,11 @@ public class GetFoodSvc {
         return placesOpenNow;
     }
 
+    public List<Listing> getPageResult(List<Listing> shopsOpenNow, int pageIndex, int listingPerPage) {
+        
+        return shopsOpenNow.subList(Math.min(shopsOpenNow.size(), pageIndex * listingPerPage), Math.min(shopsOpenNow.size(), pageIndex * listingPerPage + listingPerPage));
+    
+    }
    
 }
 
