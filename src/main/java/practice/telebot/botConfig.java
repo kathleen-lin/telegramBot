@@ -22,7 +22,6 @@ public class botConfig {
         return bot;
     }
 
-    // Required to read properties using @Value in a non-Spring context
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
